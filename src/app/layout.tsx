@@ -4,7 +4,7 @@ import { AuthProvider } from "@/features/auth/hooks/useAuth";
 import Navbar from "@/shared/components/Navbar";
 
 export const metadata: Metadata = {
-  title: "Medium Clone",
+  title: "WriteIt",
   description: "A place to read, write, and deepen your understanding",
 };
 
