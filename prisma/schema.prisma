@@ -1,0 +1,95 @@
+// Prisma schema untuk Medium Clone
+// Database: PostgreSQL (Neon)
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model User {
+  id        String   @id @default(cuid())
+  username  String   @unique
+  email     String   @unique
+  password  String
+  name      String
+  bio       String   @default("")
+  avatar    String   @default("")
+  createdAt DateTime @default(now())
+
+  articles  Article[]
+
+  // Self-relation: following / followers (many-to-many)
+  following Follow[] @relation("UserFollowing")
+  followers Follow[] @relation("UserFollowers")
+
+  claps     Clap[]
+  bookmarks Bookmark[]
+
+  @@map("users")
+}
+
+model Article {
+  id          String   @id @default(cuid())
+  slug        String   @unique
+  title       String
+  subtitle    String   @default("")
+  content     String   @default("")
+  coverImage  String   @default("") @map("cover_image")
+  tags        String[] @default([])
+  status      String   @default("published") // "published" | "draft"
+  readingTime Int      @default(1) @map("reading_time")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  authorId String @map("author_id")
+  author   User   @relation(fields: [authorId], references: [id], onDelete: Cascade)
+
+  claps     Clap[]
+  bookmarks Bookmark[]
+
+  @@map("articles")
+}
+
+// Junction table: clap (like) on an article by a user
+model Clap {
+  id        String  @id @default(cuid())
+  userId    String  @map("user_id")
+  articleId String  @map("article_id")
+
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  article Article @relation(fields: [articleId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, articleId])
+  @@map("claps")
+}
+
+// Junction table: bookmark on an article by a user
+model Bookmark {
+  id        String  @id @default(cuid())
+  userId    String  @map("user_id")
+  articleId String  @map("article_id")
+
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  article Article @relation(fields: [articleId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, articleId])
+  @@map("bookmarks")
+}
+
+// Junction table: follow relationship between users
+model Follow {
+  id          String @id @default(cuid())
+  followerId  String @map("follower_id")
+  followingId String @map("following_id")
+
+  follower  User @relation("UserFollowing", fields: [followerId], references: [id], onDelete: Cascade)
+  following User @relation("UserFollowers", fields: [followingId], references: [id], onDelete: Cascade)
+
+  @@unique([followerId, followingId])
+  @@map("follows")
+}
