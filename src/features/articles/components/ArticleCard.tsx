@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { formatDistanceToNow } from "date-fns";
-import { Bookmark, Clap, MoreHorizontal, Trash2, Edit } from "lucide-react";
+import { Bookmark, MoreHorizontal, Trash2, Edit } from "lucide-react";
 import type { ArticleWithAuthor } from "@/shared/types";
 import { getExcerpt } from "@/features/articles/utils/articleUtils";
 import { useAuth } from "@/features/auth/hooks/useAuth";
