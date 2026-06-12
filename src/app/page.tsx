@@ -1,13 +1,13 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import ArticleCard from "@/features/articles/components/ArticleCard";
 import type { ArticleWithAuthor } from "@/shared/types";
 import { ALL_TAGS } from "@/features/articles/utils/articleUtils";
 import { TrendingUp } from "lucide-react";
 
-export default function HomePage() {
+function HomeContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const activeTag = searchParams.get("tag") || "";
@@ -141,5 +141,14 @@ export default function HomePage() {
         </aside>
       </div>
     </div>
+  );
+}
+
+
+export default function HomePage() {
+  return (
+    <Suspense fallback={<div className="max-w-3xl mx-auto px-4 py-8 text-gray-400 text-center">Loading...</div>}>
+      <HomeContent />
+    </Suspense>
   );
 }

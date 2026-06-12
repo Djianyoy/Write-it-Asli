@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import ArticleCard from "@/features/articles/components/ArticleCard";
@@ -11,7 +11,7 @@ interface SearchUser {
   id: string; username: string; name: string; bio: string; avatar: string; followers: string[];
 }
 
-export default function SearchPage() {
+function SearchContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const q = searchParams.get("q") || "";
@@ -109,5 +109,13 @@ export default function SearchPage() {
         </>
       )}
     </div>
+  );
+}
+
+export default function SearchPage() {
+  return (
+    <Suspense fallback={<div className="max-w-3xl mx-auto px-4 py-8 text-gray-400 text-center">Loading...</div>}>
+      <SearchContent />
+    </Suspense>
   );
 }
